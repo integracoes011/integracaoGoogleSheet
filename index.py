@@ -9,7 +9,7 @@ def new_order():
     code = 200
     msg = "ok"
 
-    if not (data_order := request.get_json()):
+    if not (data_order := request.get_json().get("xml_order")):
         code = 400
         msg = "datas not found"
     else:
@@ -38,4 +38,4 @@ def new_order():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
