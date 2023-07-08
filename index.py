@@ -26,15 +26,31 @@ def new_order():
         # )
 
         msg = ET.tostring(
-                ET.ElementTree(root).getroot(),
-                encoding="utf-8",
-                method="xml").decode()
+            ET.ElementTree(root).getroot(),
+            encoding="utf-8",
+            method="xml").decode()
 
     return make_response(
         jsonify({
             "msg": msg
         }), code
     )
+
+
+@app.route("/callback")
+def callback():
+    payload = {}
+    try:
+        payload.update({"body": request.get_json()})
+    except Exception:
+        payload.update({"body": "void"})
+
+    try:
+        payload.update({"args": request.args})
+    except Exception:
+        payload.update({"args": "void"})
+
+    return jsonify(payload)
 
 
 if __name__ == "__main__":
