@@ -4,31 +4,43 @@ import xml.etree.ElementTree as ET
 app = Flask(__name__)
 
 
+def subNull(dado):
+    if not dado["qtdEstoque"]:
+        dado.update({"qtdEstoque": 0})
+    return dado
+
+
 @app.route("/order", methods=["POST"])
 def new_order():
     code = 200
     msg = "ok"
 
-    if not (data_order := request.get_json().get("xml_order")):
+    if not (payload := request.get_json().get("payload")):
         code = 400
         msg = "datas not found"
     else:
-        root = ET.Element("pedido")
+        msg = [subNull(i) for i in payload]
 
-        for key, value in data_order.items():
-            ET.SubElement(root, key).text = value
+    # if not (data_order := request.get_json().get("xml_order")):
+    #     code = 400
+    #     msg = "datas not found"
+    # else:
+    #     root = ET.Element("pedido")
+    #
+    #     for key, value in data_order.items():
+    #         ET.SubElement(root, key).text = value
 
-        # msg = '<?xml version="1.0" encoding="UTF-8"?>{}'.format(
-        #     ET.tostring(
-        #         ET.ElementTree(root).getroot(),
-        #         encoding="utf-8",
-        #         method="xml").decode()
-        # )
+    # msg = '<?xml version="1.0" encoding="UTF-8"?>{}'.format(
+    #     ET.tostring(
+    #         ET.ElementTree(root).getroot(),
+    #         encoding="utf-8",
+    #         method="xml").decode()
+    # )
 
-        msg = ET.tostring(
-            ET.ElementTree(root).getroot(),
-            encoding="utf-8",
-            method="xml").decode()
+    # msg = ET.tostring(
+    #     ET.ElementTree(root).getroot(),
+    #     encoding="utf-8",
+    #     method="xml").decode()
 
     return make_response(
         jsonify({
