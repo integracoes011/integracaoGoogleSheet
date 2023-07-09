@@ -1,11 +1,19 @@
 from flask import Flask, jsonify, make_response, request
 import requests
 import json
-import xml.etree.ElementTree as ET
+from pymongo import MongoClient
+from decouple import config
+
+client = MongoClient(
+    config("URL_CONNECT")
+)
+
+db = client["tokens"]
+col_bling = db["bling"]
 
 app = Flask(__name__)
 BASE_URL = "https://www.bling.com.br/Api/v3/"
-TOKEN = "9a511464249295dca71dcac5da8c799ed144c84c"
+TOKEN = col_bling.find_one({"_id": 0})
 
 
 def listarProdutos():
@@ -36,7 +44,6 @@ def criarEstoque(idDeposito,
                  quantidade,
                  precoVenda,
                  precoCusto):
-
     payload = json.dumps({
         "deposito": {
             "id": idDeposito
@@ -96,28 +103,6 @@ def new_order():
                     )
                     break
 
-
-    # if not (data_order := request.get_json().get("xml_order")):
-    #     code = 400
-    #     msg = "datas not found"
-    # else:
-    #     root = ET.Element("pedido")
-    #
-    #     for key, value in data_order.items():
-    #         ET.SubElement(root, key).text = value
-
-    # msg = '<?xml version="1.0" encoding="UTF-8"?>{}'.format(
-    #     ET.tostring(
-    #         ET.ElementTree(root).getroot(),
-    #         encoding="utf-8",
-    #         method="xml").decode()
-    # )
-
-    # msg = ET.tostring(
-    #     ET.ElementTree(root).getroot(),
-    #     encoding="utf-8",
-    #     method="xml").decode()
-
     return make_response(
         jsonify({
             "msg": msg
@@ -127,18 +112,37 @@ def new_order():
 
 @app.route("/callback")
 def callback():
-    payload = {}
-    try:
-        payload.update({"body": request.get_json()})
-    except Exception:
-        payload.update({"body": "void"})
+    payload = request.args
+    code = payload.get("code")
 
-    try:
-        payload.update({"args": request.args})
-    except Exception:
-        payload.update({"args": "void"})
-
-    return jsonify(payload)
+    payload = json.dumps({
+        "grant_type": "authorization_code",
+        "code": code
+    })
+    headers = {
+        'Authorization': 'Basic ' + config('BASIC_AUTHENTICATION'),
+        'Content-Type': 'application/json',
+        'Cookie': 'PHPSESSID=f4aa8gc0a6kr70ag2qfbi8iu1k'
+    }
+    response = requests.request("POST", f"{BASE_URL}oauth/token", headers=headers, data=payload)
+    if not col_bling.find_one({"_id": 0}):
+        col_bling.insert_one(
+            {
+                "_id": 0,
+                "token": response.json()["access_token"]
+            }
+        )
+    else:
+        col_bling.update_one(
+            {"_id": 0},
+            {"$set": {"token": response.json()["access_token"]}}
+        )
+    return jsonify(
+        {
+            "msg": "token gerado com sucesso!",
+            "token": response.json()["access_token"]
+         }
+    )
 
 
 if __name__ == "__main__":
