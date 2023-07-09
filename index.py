@@ -13,7 +13,7 @@ col_bling = db["bling"]
 
 app = Flask(__name__)
 BASE_URL = "https://www.bling.com.br/Api/v3/"
-TOKEN = col_bling.find_one({"_id": 0})
+TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
 
 def listarProdutos():

@@ -4,12 +4,36 @@ import secrets
 import requests
 
 from flask import Flask, request, redirect
+from pymongo import MongoClient
+from decouple import config
 
+# BASE_URL = "https://www.bling.com.br/Api/v3/"
+# CLIENT_ID = "06c32f870671fa3746343e06a8d64ab4ff711847"
+# TOKEN = "9a511464249295dca71dcac5da8c799ed144c84c"
+
+
+client = MongoClient(
+    config("URL_CONNECT")
+)
+
+db = client["tokens"]
+col_bling = db["bling"]
+
+app = Flask(__name__)
 BASE_URL = "https://www.bling.com.br/Api/v3/"
-CLIENT_ID = "06c32f870671fa3746343e06a8d64ab4ff711847"
-TOKEN = "9a511464249295dca71dcac5da8c799ed144c84c"
+TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
-app_teste = Flask(__name__)
+data = requests.get(
+        f"{BASE_URL}produtos",
+        headers={
+            "Authorization": f"Bearer {TOKEN}"
+        }
+    )
+    # retorna a lista de produtos
+
+print(TOKEN)
+print(data.json())
+
 
 
 # def listarProdutos():
@@ -64,64 +88,64 @@ app_teste = Flask(__name__)
 #
 #     print(response.text)
 
-
-@app_teste.route("/")
-def gerarCode():
-    data = {
-        "response_type": "code",
-        "client_id": CLIENT_ID,
-        "state": secrets.token_hex(40)
-    }
-
-    response = requests.get(f"{BASE_URL}oauth/authorize", params=data)
-    return redirect("/token?code={k}")
-
-
-@app_teste("/token")
-def gerarToken():
-    code = request.args.get("code")
-    payload = json.dumps({
-        "grant_type": "authorization_code",
-        "code": code
-    })
-    headers = {
-        'Authorization': 'Basic MDZjMzJmODcwNjcxZmEzNzQ2MzQzZTA2YThkNjRhYjRmZjcxMTg0NzpmOWNiYmFjNzJlODhiNmFlYzkwY2U2NjVlZTlmNTI0Y2E4ZTcxNGU2MzlmMjkwNjg2ODg1NjIxZjFhMmQ=',
-        'Content-Type': 'application/json',
-        'Cookie': 'PHPSESSID=f4aa8gc0a6kr70ag2qfbi8iu1k'
-    }
-    response = requests.request("POST",  f"{BASE_URL}oauth/token", headers=headers, data=payload)
-
-    return response.json()["access_token"]
-
-
-# gerarToken()
-
-if __name__ == "__main__":
-    app_teste.run(debug=True)
-
-lista = [
-    {
-        "GTIn": 7896451918604,
-        "SKU": "SDC1003",
-        "nomeProduto": "Bala de Goma Sortido DOCILE 432g - c/ 24 un",
-        "precoCusto": 8.75,
-        "precoVenda": 12.25,
-        "qtdEstoque": 0
-    },
-    {
-        "GTIn": 7622300988524,
-        "SKU": "SCD1002",
-        "nomeProduto": "Barra de Chocolate branco com wafer BIS XTRA OREO - 45g c/ 24 un",
-        "precoCusto": 47.10714285714286,
-        "precoVenda": 65.95,
-        "qtdEstoque": 0
-    },
-    {
-        "GTIn": 7891000321201,
-        "SKU": "SCD1001",
-        "nomeProduto": "BONO DOCE DE LEITE 109g",
-        "precoCusto": 4.642857142857143,
-        "precoVenda": 6.5,
-        "qtdEstoque": 0
-    }
-]
+#
+# @app_teste.route("/")
+# def gerarCode():
+#     data = {
+#         "response_type": "code",
+#         "client_id": CLIENT_ID,
+#         "state": secrets.token_hex(40)
+#     }
+#
+#     response = requests.get(f"{BASE_URL}oauth/authorize", params=data)
+#     return redirect("/token?code={k}")
+#
+#
+# @app_teste("/token")
+# def gerarToken():
+#     code = request.args.get("code")
+#     payload = json.dumps({
+#         "grant_type": "authorization_code",
+#         "code": code
+#     })
+#     headers = {
+#         'Authorization': 'Basic MDZjMzJmODcwNjcxZmEzNzQ2MzQzZTA2YThkNjRhYjRmZjcxMTg0NzpmOWNiYmFjNzJlODhiNmFlYzkwY2U2NjVlZTlmNTI0Y2E4ZTcxNGU2MzlmMjkwNjg2ODg1NjIxZjFhMmQ=',
+#         'Content-Type': 'application/json',
+#         'Cookie': 'PHPSESSID=f4aa8gc0a6kr70ag2qfbi8iu1k'
+#     }
+#     response = requests.request("POST",  f"{BASE_URL}oauth/token", headers=headers, data=payload)
+#
+#     return response.json()["access_token"]
+#
+#
+# # gerarToken()
+#
+# if __name__ == "__main__":
+#     app_teste.run(debug=True)
+#
+# lista = [
+#     {
+#         "GTIn": 7896451918604,
+#         "SKU": "SDC1003",
+#         "nomeProduto": "Bala de Goma Sortido DOCILE 432g - c/ 24 un",
+#         "precoCusto": 8.75,
+#         "precoVenda": 12.25,
+#         "qtdEstoque": 0
+#     },
+#     {
+#         "GTIn": 7622300988524,
+#         "SKU": "SCD1002",
+#         "nomeProduto": "Barra de Chocolate branco com wafer BIS XTRA OREO - 45g c/ 24 un",
+#         "precoCusto": 47.10714285714286,
+#         "precoVenda": 65.95,
+#         "qtdEstoque": 0
+#     },
+#     {
+#         "GTIn": 7891000321201,
+#         "SKU": "SCD1001",
+#         "nomeProduto": "BONO DOCE DE LEITE 109g",
+#         "precoCusto": 4.642857142857143,
+#         "precoVenda": 6.5,
+#         "qtdEstoque": 0
+#     }
+# ]
