@@ -16,7 +16,7 @@ BASE_URL = "https://www.bling.com.br/Api/v3/"
 TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
 
-def listarProdutos():
+def listarProdutosBling():
     data = requests.get(
         f"{BASE_URL}produtos",
         headers={
@@ -87,7 +87,7 @@ def new_order():
         listaDeProdutosTabela = [subNull(i) for i in payload]
 
         # lista de produtos vindo do bling
-        listaDeProdutosBling = listarProdutos()
+        listaDeProdutosBling = listarProdutosBling()
 
         idDeposito = getIdDeposito()
 
@@ -108,6 +108,13 @@ def new_order():
             "msg": msg
         }), code
     )
+
+
+@app.route("/produtos")
+def getprodutos():
+    listaPrudutosBling = listarProdutosBling()
+
+    return jsonify({"payload": listaPrudutosBling})
 
 
 @app.route("/callback")
@@ -141,7 +148,7 @@ def callback():
         {
             "msg": "token gerado com sucesso!",
             "token": response.json()["access_token"]
-         }
+        }
     )
 
 
