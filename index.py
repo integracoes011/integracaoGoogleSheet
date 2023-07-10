@@ -13,10 +13,11 @@ col_bling = db["bling"]
 
 app = Flask(__name__)
 BASE_URL = "https://www.bling.com.br/Api/v3/"
-TOKEN = col_bling.find_one({"_id": 0}).get("token")
+
 
 
 def listarProdutosBling():
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
         f"{BASE_URL}produtos",
         headers={
@@ -28,6 +29,7 @@ def listarProdutosBling():
 
 
 def getIdDeposito():
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
         f"{BASE_URL}depositos",
         headers={
@@ -44,6 +46,7 @@ def criarEstoque(idDeposito,
                  quantidade,
                  precoVenda,
                  precoCusto):
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
     payload = json.dumps({
         "deposito": {
             "id": idDeposito
