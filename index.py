@@ -15,7 +15,6 @@ app = Flask(__name__)
 BASE_URL = "https://www.bling.com.br/Api/v3/"
 
 
-
 def listarProdutosBling():
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
@@ -45,8 +44,8 @@ def criarEstoque(idDeposito,
                  idProduto,
                  quantidade,
                  precoVenda,
-                 precoCusto):
-    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+                 precoCusto, TOKEN):
+
     payload = json.dumps({
         "deposito": {
             "id": idDeposito
@@ -78,7 +77,7 @@ def subNull(dado):
 
 
 @app.route("/order", methods=["POST"])
-def new_order():
+async def new_order():
     code = 200
     msg = "ok"
 
@@ -93,7 +92,7 @@ def new_order():
         listaDeProdutosBling = listarProdutosBling()
 
         idDeposito = getIdDeposito()
-
+        TOKEN = col_bling.find_one({"_id": 0}).get("token")
         for produtoBling in listaDeProdutosBling:
             for produtoTabela in listaDeProdutosTabela:
                 if produtoTabela["SKU"] == produtoBling["codigo"]:
@@ -102,7 +101,8 @@ def new_order():
                         produtoBling["id"],
                         produtoTabela["qtdEstoque"],
                         produtoTabela["precoVenda"],
-                        produtoTabela["precoCusto"]
+                        produtoTabela["precoCusto"],
+                        TOKEN
                     )
                     break
 
