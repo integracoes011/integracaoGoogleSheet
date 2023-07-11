@@ -81,7 +81,7 @@ def criarEstoque(idDeposito,
     }
 
     url = f"{BASE_URL}estoques"
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, timeout=20)
 
     if response.status_code == 201:
         return True
