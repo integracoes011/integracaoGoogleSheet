@@ -121,21 +121,21 @@ def getprodutos():
 
 @app.route("/callback")
 def callback():
-    args = request.args
-    return args
-    # payload = request.args
-    # code = payload.get("code")
-    #
-    # payload = json.dumps({
-    #     "grant_type": "authorization_code",
-    #     "code": code
-    # })
-    # headers = {
-    #     'Authorization': 'Basic ' + config('BASIC_AUTHENTICATION'),
-    #     'Content-Type': 'application/json',
-    #     'Cookie': 'PHPSESSID=f4aa8gc0a6kr70ag2qfbi8iu1k'
-    # }
-    # response = requests.request("POST", f"{BASE_URL}oauth/token", headers=headers, data=payload)
+    payload = request.args
+    code = payload.get("code")
+
+    payload = json.dumps({
+        "grant_type": "authorization_code",
+        "code": code
+    })
+    headers = {
+        'Authorization': 'Basic ' + config('BASIC_AUTHENTICATION'),
+        'Content-Type': 'application/json',
+        'Cookie': 'PHPSESSID=f4aa8gc0a6kr70ag2qfbi8iu1k'
+    }
+    response = requests.request("POST", f"{BASE_URL}oauth/token", headers=headers, data=payload)
+
+    return response.json()
     # if not col_bling.find_one({"_id": 0}):
     #     col_bling.insert_one(
     #         {
