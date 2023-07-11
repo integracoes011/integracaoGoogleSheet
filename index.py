@@ -91,9 +91,8 @@ def new_order():
         # lista de produtos vindo do bling
         listaDeProdutosBling = listarProdutosBling()
 
-        return listaDeProdutosBling
-    #
-    #     idDeposito = getIdDeposito()
+        idDeposito = getIdDeposito()
+        return idDeposito
     #     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     #     for produtoBling in listaDeProdutosBling:
     #         for produtoTabela in listaDeProdutosTabela:
