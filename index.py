@@ -3,6 +3,7 @@ import requests
 import json
 from pymongo import MongoClient
 from decouple import config
+import aiohttp
 
 client = MongoClient(
     config("URL_CONNECT")
@@ -15,7 +16,7 @@ app = Flask(__name__)
 BASE_URL = "https://www.bling.com.br/Api/v3/"
 
 
-async def listarProdutosBling():
+def listarProdutosBling():
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
         f"{BASE_URL}produtos",
@@ -29,27 +30,45 @@ async def listarProdutosBling():
 
 async def listarEspecificoBling(codigo):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
-    data = requests.get(
-        f"{BASE_URL}produtos?codigo={codigo}",
-        headers={
-            "Authorization": f"Bearer {TOKEN}"
-        }
-    )
-    # retorna produto especifico
-    return data.json()["data"][0]
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+                f"{BASE_URL}produtos?codigo={codigo}",
+                headers={"Authorization": f"Bearer {TOKEN}"}
+        ) as response:
+            data = await response.json()
+            # retorna produto especifico
+            return data["data"][0]
+
+    # data = requests.get(
+    #     f"{BASE_URL}produtos?codigo={codigo}",
+    #     headers={
+    #         "Authorization": f"Bearer {TOKEN}"
+    #     }
+    # )
+    # # retorna produto especifico
+    # return data.json()["data"][0]
 
 
 async def getIdDeposito():
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
-    data = requests.get(
-        f"{BASE_URL}depositos",
-        headers={
-            "Authorization": f"Bearer {TOKEN}"
-        }
-    )
-
-    # retorna o id do primeiro deposito
-    return data.json()["data"][0]["id"]
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+                f"{BASE_URL}depositos",
+                headers={"Authorization": f"Bearer {TOKEN}"}
+        ) as response:
+            data = await response.json()
+            # retorna o id do primeiro deposito
+            return data["data"][0]["id"]
+    # data = requests.get(
+    #     f"{BASE_URL}depositos",
+    #     headers={
+    #         "Authorization": f"Bearer {TOKEN}"
+    #     }
+    # )
+    #
+    # # retorna o id do primeiro deposito
+    # return data.json()["data"][0]["id"]
 
 
 async def criarEstoque(idDeposito,
@@ -78,12 +97,21 @@ async def criarEstoque(idDeposito,
         'Authorization': f'Bearer {TOKEN}',
         'Cookie': 'PHPSESSID=78t62q51t4ue3tp9f367ll6b3m'
     }
-    url = f"{BASE_URL}estoques"
-    response = requests.request("POST", url, headers=headers, data=payload)
-
-    if response.status_code == 201:
-        return True
-    return False
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+                f"{BASE_URL}estoques",
+                headers=headers,
+                json=payload
+        ) as response:
+            if response.status == 201:
+                return True
+            return False
+    # url = f"{BASE_URL}estoques"
+    # response = requests.request("POST", url, headers=headers, data=payload)
+    #
+    # if response.status_code == 201:
+    #     return True
+    # return False
 
 
 @app.route("/order", methods=["POST"])
