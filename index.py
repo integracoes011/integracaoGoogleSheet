@@ -27,7 +27,7 @@ def listarProdutosBling():
     return data.json()["data"]
 
 
-def listarProdutoBling(codigo):
+def listarEspecificoBling(codigo):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
         f"{BASE_URL}produtos?codigo={codigo}",
@@ -35,8 +35,9 @@ def listarProdutoBling(codigo):
             "Authorization": f"Bearer {TOKEN}"
         }
     )
-    # retorna a lista de produtos
+    # retorna produto especifico
     return data.json()["data"][0]
+
 
 def getIdDeposito():
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
@@ -92,12 +93,10 @@ def new_order():
     code = 200
     count = 0
 
-    if not (payload := request.get_json().get("payload")):
+    if not (listaDeProdutosTabela := request.get_json().get("payload")):
         code = 400
         count = 0
     else:
-        # lista de produtos vindo da tabela
-        listaDeProdutosTabela = [i for i in payload]
 
         # lista de produtos vindo do bling
         # listaDeProdutosBling = listarProdutosBling()
@@ -107,7 +106,7 @@ def new_order():
         TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
         for produtoTabela in listaDeProdutosTabela:
-            produtoBling = listarProdutoBling(produtoTabela["SKU"])
+            produtoBling = listarEspecificoBling(produtoTabela["SKU"])
             count += 1
             criarEstoque(
                 idDeposito,
@@ -117,7 +116,6 @@ def new_order():
                 produtoTabela["precoCusto"],
                 TOKEN
             )
-
 
     return make_response(
         jsonify({
