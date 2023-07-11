@@ -44,7 +44,9 @@ def criarEstoque(idDeposito,
                  idProduto,
                  quantidade,
                  precoVenda,
-                 precoCusto, TOKEN):
+                 precoCusto,
+                 TOKEN):
+
     payload = json.dumps({
         "deposito": {
             "id": idDeposito
@@ -85,31 +87,31 @@ def new_order():
         msg = "datas not found"
     else:
         # lista de produtos vindo da tabela
-        listaDeProdutosTabela = [subNull(i) for i in payload]
-
-        # lista de produtos vindo do bling
-        listaDeProdutosBling = listarProdutosBling()
-
-        idDeposito = getIdDeposito()
-        TOKEN = col_bling.find_one({"_id": 0}).get("token")
-        for produtoBling in listaDeProdutosBling:
-            for produtoTabela in listaDeProdutosTabela:
-                if produtoTabela["SKU"] == produtoBling["codigo"]:
-                    criarEstoque(
-                        idDeposito,
-                        produtoBling["id"],
-                        produtoTabela["qtdEstoque"],
-                        produtoTabela["precoVenda"],
-                        produtoTabela["precoCusto"],
-                        TOKEN
-                    )
-                    break
-
-    return make_response(
-        jsonify({
-            "msg": msg
-        }), code
-    )
+        listaDeProdutosTabela = [i for i in payload]
+        return listaDeProdutosTabela
+    #     # lista de produtos vindo do bling
+    #     listaDeProdutosBling = listarProdutosBling()
+    #
+    #     idDeposito = getIdDeposito()
+    #     TOKEN = col_bling.find_one({"_id": 0}).get("token")
+    #     for produtoBling in listaDeProdutosBling:
+    #         for produtoTabela in listaDeProdutosTabela:
+    #             if produtoTabela["SKU"] == produtoBling["codigo"]:
+    #                 criarEstoque(
+    #                     idDeposito,
+    #                     produtoBling["id"],
+    #                     produtoTabela["qtdEstoque"],
+    #                     produtoTabela["precoVenda"],
+    #                     produtoTabela["precoCusto"],
+    #                     TOKEN
+    #                 )
+    #                 break
+    #
+    # return make_response(
+    #     jsonify({
+    #         "msg": msg
+    #     }), code
+    # )
 
 
 @app.route("/produtos")
