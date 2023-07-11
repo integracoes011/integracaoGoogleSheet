@@ -93,7 +93,7 @@ def subNull(dado):
 
 
 @app.route("/order", methods=["POST"])
-def new_order():
+async def new_order():
     code = 200
     count = 0
 
@@ -102,13 +102,13 @@ def new_order():
         count = 0
     else:
 
-        idDeposito = getIdDeposito()
+        idDeposito = await getIdDeposito()
 
-        TOKEN = col_bling.find_one({"_id": 0}).get("token")
+        TOKEN = await col_bling.find_one({"_id": 0}).get("token")
 
         for produtoTabela in listaDeProdutosTabela:
-            produtoBling = listarEspecificoBling(produtoTabela["SKU"])
-            result = criarEstoque(
+            produtoBling = await listarEspecificoBling(produtoTabela["SKU"])
+            result = await criarEstoque(
                 idDeposito,
                 produtoBling["id"],
                 produtoTabela["qtdEstoque"],
@@ -130,7 +130,6 @@ def new_order():
 @app.route("/produtos")
 def getprodutos():
     listaPrudutosBling = listarProdutosBling()
-
     return jsonify({"payload": listaPrudutosBling})
 
 
