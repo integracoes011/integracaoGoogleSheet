@@ -90,35 +90,29 @@ def new_order():
 
         # lista de produtos vindo do bling
         listaDeProdutosBling = listarProdutosBling()
-        minilista = []
 
-        for i in listaDeProdutosBling:
-            minilista.append(i)
-            if len(i) > 3:
-                break
-        return minilista
-    #     idDeposito = getIdDeposito()
-    #
-    #     TOKEN = col_bling.find_one({"_id": 0}).get("token")
-    #
-    #     for produtoBling in listaDeProdutosBling:
-    #         for produtoTabela in listaDeProdutosTabela:
-    #             if produtoTabela["SKU"] == produtoBling["codigo"]:
-    #                 criarEstoque(
-    #                     idDeposito,
-    #                     produtoBling["id"],
-    #                     produtoTabela["qtdEstoque"],
-    #                     produtoTabela["precoVenda"],
-    #                     produtoTabela["precoCusto"],
-    #                     TOKEN
-    #                 )
-    #                 break
-    #
-    # return make_response(
-    #     jsonify({
-    #         "msg": msg
-    #     }), code
-    # )
+        idDeposito = getIdDeposito()
+
+        TOKEN = col_bling.find_one({"_id": 0}).get("token")
+
+        for produtoBling in listaDeProdutosBling:
+            for produtoTabela in listaDeProdutosTabela:
+                if produtoTabela["SKU"] == produtoBling["codigo"]:
+                    criarEstoque(
+                        idDeposito,
+                        produtoBling["id"],
+                        produtoTabela["qtdEstoque"],
+                        produtoTabela["precoVenda"],
+                        produtoTabela["precoCusto"],
+                        TOKEN
+                    )
+                    break
+
+    return make_response(
+        jsonify({
+            "msg": msg
+        }), code
+    )
 
 
 @app.route("/produtos")
