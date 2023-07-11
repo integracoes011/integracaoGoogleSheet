@@ -28,7 +28,7 @@ def listarProdutosBling():
     return data.json()["data"]
 
 
-async def listarEspecificoBling(codigo, TOKEN):
+def listarEspecificoBling(codigo, TOKEN):
     data = requests.get(
         f"{BASE_URL}produtos?codigo={codigo}",
         headers={
@@ -51,7 +51,7 @@ def getIdDeposito(TOKEN):
     return data.json()["data"][0]["id"]
 
 
-async def criarEstoque(idDeposito,
+def criarEstoque(idDeposito,
                  idProduto,
                  quantidade,
                  precoVenda,
@@ -77,21 +77,13 @@ async def criarEstoque(idDeposito,
         'Authorization': f'Bearer {TOKEN}',
         'Cookie': 'PHPSESSID=78t62q51t4ue3tp9f367ll6b3m'
     }
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-                f"{BASE_URL}estoques",
-                headers=headers,
-                json=payload
-        ) as response:
-            if response.status == 201:
-                return True
-            return False
-    # url = f"{BASE_URL}estoques"
-    # response = requests.request("POST", url, headers=headers, data=payload)
-    #
-    # if response.status_code == 201:
-    #     return True
-    # return False
+
+    url = f"{BASE_URL}estoques"
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    if response.status_code == 201:
+        return True
+    return False
 
 
 @app.route("/order", methods=["POST"])
