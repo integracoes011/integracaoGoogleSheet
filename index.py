@@ -46,9 +46,11 @@ def getIdDeposito(TOKEN):
             "Authorization": f"Bearer {TOKEN}"
         }
     )
-
-    # retorna o id do primeiro deposito
-    return data.json()["data"][0]["id"]
+    try:
+        # retorna o id do primeiro deposito
+        return data.json()["data"][0]["id"]
+    except:
+        return False
 
 
 def criarEstoque(idDeposito,
@@ -99,6 +101,10 @@ def new_order():
 
         idDeposito = getIdDeposito(TOKEN)
 
+        if not idDeposito:
+            return make_response(
+                jsonify({"msg": "token error"}), 403
+            )
         for produtoTabela in listaDeProdutosTabela:
 
             produtoBling = listarEspecificoBling(produtoTabela["SKU"], TOKEN)
