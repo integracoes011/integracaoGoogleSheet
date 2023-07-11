@@ -27,6 +27,17 @@ def listarProdutosBling():
     return data.json()["data"]
 
 
+def listarProdutoBling(codigo):
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+    data = requests.get(
+        f"{BASE_URL}produtos?codigo={codigo}",
+        headers={
+            "Authorization": f"Bearer {TOKEN}"
+        }
+    )
+    # retorna a lista de produtos
+    return data.json()["data"][0]
+
 def getIdDeposito():
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
@@ -89,27 +100,24 @@ def new_order():
         listaDeProdutosTabela = [i for i in payload]
 
         # lista de produtos vindo do bling
-        listaDeProdutosBling = listarProdutosBling()
+        # listaDeProdutosBling = listarProdutosBling()
 
-        listaId = [i["codigo"] for i in listaDeProdutosBling]
-        return listaId
-        # idDeposito = getIdDeposito()
-        #
-        # TOKEN = col_bling.find_one({"_id": 0}).get("token")
-        #
-        # for produtoBling in listaDeProdutosBling:
-        #     for produtoTabela in listaDeProdutosTabela:
-        #         if produtoTabela["SKU"] == produtoBling["codigo"]:
-        #             count += 1
-        #             criarEstoque(
-        #                 idDeposito,
-        #                 produtoBling["id"],
-        #                 produtoTabela["qtdEstoque"],
-        #                 produtoTabela["precoVenda"],
-        #                 produtoTabela["precoCusto"],
-        #                 TOKEN
-        #             )
-        #             break
+        idDeposito = getIdDeposito()
+
+        TOKEN = col_bling.find_one({"_id": 0}).get("token")
+
+        for produtoTabela in listaDeProdutosTabela:
+            produtoBling = listarProdutoBling(produtoTabela["SKU"])
+            count += 1
+            criarEstoque(
+                idDeposito,
+                produtoBling["id"],
+                produtoTabela["qtdEstoque"],
+                produtoTabela["precoVenda"],
+                produtoTabela["precoCusto"],
+                TOKEN
+            )
+
 
     return make_response(
         jsonify({
