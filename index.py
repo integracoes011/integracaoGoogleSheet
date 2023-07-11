@@ -77,7 +77,7 @@ def subNull(dado):
 
 
 @app.route("/order", methods=["POST"])
-async def new_order():
+def new_order():
     code = 200
     msg = "ok"
 
