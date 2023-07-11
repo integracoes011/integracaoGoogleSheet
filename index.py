@@ -90,10 +90,17 @@ def new_order():
 
         # lista de produtos vindo do bling
         listaDeProdutosBling = listarProdutosBling()
+        minilista = []
 
-        idDeposito = getIdDeposito()
-        return jsonify({"id": idDeposito})
+        for i in listaDeProdutosBling:
+            minilista.append(i)
+            if len(i) > 3:
+                break
+        return minilista
+    #     idDeposito = getIdDeposito()
+    #
     #     TOKEN = col_bling.find_one({"_id": 0}).get("token")
+    #
     #     for produtoBling in listaDeProdutosBling:
     #         for produtoTabela in listaDeProdutosTabela:
     #             if produtoTabela["SKU"] == produtoBling["codigo"]:
