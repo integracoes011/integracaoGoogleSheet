@@ -45,7 +45,6 @@ def criarEstoque(idDeposito,
                  quantidade,
                  precoVenda,
                  precoCusto, TOKEN):
-
     payload = json.dumps({
         "deposito": {
             "id": idDeposito
@@ -123,7 +122,7 @@ def getprodutos():
 @app.route("/callback")
 def callback():
     args = request.args
-    return  args
+    return args
     # payload = request.args
     # code = payload.get("code")
     #
