@@ -46,7 +46,6 @@ def criarEstoque(idDeposito,
                  precoVenda,
                  precoCusto,
                  TOKEN):
-
     payload = json.dumps({
         "deposito": {
             "id": idDeposito
@@ -88,9 +87,11 @@ def new_order():
     else:
         # lista de produtos vindo da tabela
         listaDeProdutosTabela = [i for i in payload]
-        return listaDeProdutosTabela
-    #     # lista de produtos vindo do bling
-    #     listaDeProdutosBling = listarProdutosBling()
+
+        # lista de produtos vindo do bling
+        listaDeProdutosBling = listarProdutosBling()
+
+        return listaDeProdutosBling
     #
     #     idDeposito = getIdDeposito()
     #     TOKEN = col_bling.find_one({"_id": 0}).get("token")
