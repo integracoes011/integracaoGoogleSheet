@@ -28,47 +28,27 @@ def listarProdutosBling():
     return data.json()["data"]
 
 
-async def listarEspecificoBling(codigo):
-    TOKEN = col_bling.find_one({"_id": 0}).get("token")
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-                f"{BASE_URL}produtos?codigo={codigo}",
-                headers={"Authorization": f"Bearer {TOKEN}"}
-        ) as response:
-            data = await response.json()
-            # retorna produto especifico
-            return data["data"][0]
-
-    # data = requests.get(
-    #     f"{BASE_URL}produtos?codigo={codigo}",
-    #     headers={
-    #         "Authorization": f"Bearer {TOKEN}"
-    #     }
-    # )
-    # # retorna produto especifico
-    # return data.json()["data"][0]
+async def listarEspecificoBling(codigo, TOKEN):
+    data = requests.get(
+        f"{BASE_URL}produtos?codigo={codigo}",
+        headers={
+            "Authorization": f"Bearer {TOKEN}"
+        }
+    )
+    # retorna produto especifico
+    return data.json()["data"][0]
 
 
-async def getIdDeposito():
-    TOKEN = col_bling.find_one({"_id": 0}).get("token")
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-                f"{BASE_URL}depositos",
-                headers={"Authorization": f"Bearer {TOKEN}"}
-        ) as response:
-            data = await response.json()
-            # retorna o id do primeiro deposito
-            return data["data"][0]["id"]
-    # data = requests.get(
-    #     f"{BASE_URL}depositos",
-    #     headers={
-    #         "Authorization": f"Bearer {TOKEN}"
-    #     }
-    # )
-    #
-    # # retorna o id do primeiro deposito
-    # return data.json()["data"][0]["id"]
+def getIdDeposito(TOKEN):
+    data = requests.get(
+        f"{BASE_URL}depositos",
+        headers={
+            "Authorization": f"Bearer {TOKEN}"
+        }
+    )
+
+    # retorna o id do primeiro deposito
+    return data.json()["data"][0]["id"]
 
 
 async def criarEstoque(idDeposito,
@@ -115,7 +95,7 @@ async def criarEstoque(idDeposito,
 
 
 @app.route("/order", methods=["POST"])
-async def new_order():
+def new_order():
     code = 200
     count = 0
 
@@ -123,24 +103,26 @@ async def new_order():
         code = 400
         count = 0
     else:
-
-        idDeposito = await getIdDeposito()
-
         TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
-        for produtoTabela in listaDeProdutosTabela:
-            produtoBling = await listarEspecificoBling(produtoTabela["SKU"])
-            result = await criarEstoque(
-                idDeposito,
-                produtoBling["id"],
-                produtoTabela["qtdEstoque"],
-                produtoTabela["precoVenda"],
-                produtoTabela["precoCusto"],
-                TOKEN
-            )
+        idDeposito = getIdDeposito(TOKEN)
 
-            if result:
-                count += 1
+        for produtoTabela in listaDeProdutosTabela:
+
+            produtoBling = listarEspecificoBling(produtoTabela["SKU"], TOKEN)
+
+            if produtoBling:
+                result = criarEstoque(
+                    idDeposito,
+                    produtoBling["id"],
+                    produtoTabela["qtdEstoque"],
+                    produtoTabela["precoVenda"],
+                    produtoTabela["precoCusto"],
+                    TOKEN
+                )
+
+                if result:
+                    count += 1
 
     return make_response(
         jsonify({
