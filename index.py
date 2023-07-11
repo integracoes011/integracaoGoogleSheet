@@ -79,11 +79,11 @@ def subNull(dado):
 @app.route("/order", methods=["POST"])
 def new_order():
     code = 200
-    msg = "ok"
+    count = 0
 
     if not (payload := request.get_json().get("payload")):
         code = 400
-        msg = "datas not found"
+        count = 0
     else:
         # lista de produtos vindo da tabela
         listaDeProdutosTabela = [i for i in payload]
@@ -98,6 +98,7 @@ def new_order():
         for produtoBling in listaDeProdutosBling:
             for produtoTabela in listaDeProdutosTabela:
                 if produtoTabela["SKU"] == produtoBling["codigo"]:
+                    count += 1
                     criarEstoque(
                         idDeposito,
                         produtoBling["id"],
@@ -110,7 +111,7 @@ def new_order():
 
     return make_response(
         jsonify({
-            "msg": msg
+            "atualizacoes": count
         }), code
     )
 
