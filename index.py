@@ -97,7 +97,7 @@ def new_order():
 
         for produtoBling in listaDeProdutosBling:
             for produtoTabela in listaDeProdutosTabela:
-                if produtoTabela["SKU"] == produtoBling["codigo"]:
+                if str(produtoTabela["SKU"]).lower() == str(produtoBling["codigo"]).lower():
                     count += 1
                     criarEstoque(
                         idDeposito,
