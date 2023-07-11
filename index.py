@@ -135,25 +135,24 @@ def callback():
     }
     response = requests.request("POST", f"{BASE_URL}oauth/token", headers=headers, data=payload)
 
-    return response.json()
-    # if not col_bling.find_one({"_id": 0}):
-    #     col_bling.insert_one(
-    #         {
-    #             "_id": 0,
-    #             "token": response.json()["access_token"]
-    #         }
-    #     )
-    # else:
-    #     col_bling.update_one(
-    #         {"_id": 0},
-    #         {"$set": {"token": response.json()["access_token"]}}
-    #     )
-    # return jsonify(
-    #     {
-    #         "msg": "token gerado com sucesso!",
-    #         "token": response.json()["access_token"]
-    #     }
-    # )
+    if not col_bling.find_one({"_id": 0}):
+        col_bling.insert_one(
+            {
+                "_id": 0,
+                "token": response.json()["access_token"]
+            }
+        )
+    else:
+        col_bling.update_one(
+            {"_id": 0},
+            {"$set": {"token": response.json()["access_token"]}}
+        )
+    return jsonify(
+        {
+            "msg": "token gerado com sucesso!",
+            "token": response.json()["access_token"]
+        }
+    )
 
 
 if __name__ == "__main__":
