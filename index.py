@@ -15,7 +15,7 @@ app = Flask(__name__)
 BASE_URL = "https://www.bling.com.br/Api/v3/"
 
 
-def listarProdutosBling():
+async def listarProdutosBling():
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
         f"{BASE_URL}produtos",
@@ -27,7 +27,7 @@ def listarProdutosBling():
     return data.json()["data"]
 
 
-def listarEspecificoBling(codigo):
+async def listarEspecificoBling(codigo):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
         f"{BASE_URL}produtos?codigo={codigo}",
@@ -39,7 +39,7 @@ def listarEspecificoBling(codigo):
     return data.json()["data"][0]
 
 
-def getIdDeposito():
+async def getIdDeposito():
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     data = requests.get(
         f"{BASE_URL}depositos",
@@ -52,7 +52,7 @@ def getIdDeposito():
     return data.json()["data"][0]["id"]
 
 
-def criarEstoque(idDeposito,
+async def criarEstoque(idDeposito,
                  idProduto,
                  quantidade,
                  precoVenda,
@@ -84,12 +84,6 @@ def criarEstoque(idDeposito,
     if response.status_code == 201:
         return True
     return False
-
-
-def subNull(dado):
-    if not dado["qtdEstoque"]:
-        dado.update({"qtdEstoque": 0})
-    return dado
 
 
 @app.route("/order", methods=["POST"])
