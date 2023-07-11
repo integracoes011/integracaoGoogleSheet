@@ -92,7 +92,7 @@ def new_order():
         listaDeProdutosBling = listarProdutosBling()
 
         idDeposito = getIdDeposito()
-        return idDeposito
+        return jsonify({"id": idDeposito})
     #     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     #     for produtoBling in listaDeProdutosBling:
     #         for produtoTabela in listaDeProdutosTabela:
