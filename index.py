@@ -79,7 +79,11 @@ def criarEstoque(idDeposito,
         'Cookie': 'PHPSESSID=78t62q51t4ue3tp9f367ll6b3m'
     }
     url = f"{BASE_URL}estoques"
-    requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    if response.status_code == 201:
+        return True
+    return False
 
 
 def subNull(dado):
@@ -98,17 +102,13 @@ def new_order():
         count = 0
     else:
 
-        # lista de produtos vindo do bling
-        # listaDeProdutosBling = listarProdutosBling()
-
         idDeposito = getIdDeposito()
 
         TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
         for produtoTabela in listaDeProdutosTabela:
             produtoBling = listarEspecificoBling(produtoTabela["SKU"])
-            count += 1
-            criarEstoque(
+            result = criarEstoque(
                 idDeposito,
                 produtoBling["id"],
                 produtoTabela["qtdEstoque"],
@@ -116,6 +116,9 @@ def new_order():
                 produtoTabela["precoCusto"],
                 TOKEN
             )
+
+            if result:
+                count += 1
 
     return make_response(
         jsonify({
