@@ -126,7 +126,7 @@ async def new_order():
 
         idDeposito = await getIdDeposito()
 
-        TOKEN = await col_bling.find_one({"_id": 0}).get("token")
+        TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
         for produtoTabela in listaDeProdutosTabela:
             produtoBling = await listarEspecificoBling(produtoTabela["SKU"])
