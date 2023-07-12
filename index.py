@@ -134,6 +134,11 @@ def get_token():
     return jsonify({"token": col_bling.find_one({"_id": 0}).get("token")})
 
 
+@app.route("/deposito")
+def get_deposito():
+    return jsonify({"deposito": getIdDeposito(col_bling.find_one({"_id": 0}).get("token"))})
+
+
 @app.route("/produtos")
 def getprodutos():
     listaPrudutosBling = listarProdutosBling()
