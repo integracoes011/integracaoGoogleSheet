@@ -159,14 +159,14 @@ def getprodutos():
 @app.route("/criarestoque", methods=["POST"])
 def criar_estoque():
     payload = request.get_json("payload")
-    return criarEstoque(
+    return jsonify({"sucess": criarEstoque(
         payload["deposito"],
         payload["produtoId"],
         payload["qtdEstoque"],
         payload["preco"],
         payload["custo"],
         payload["token"]
-    )
+    )})
 
 
 @app.route("/callback")
