@@ -129,6 +129,11 @@ def new_order():
     )
 
 
+@app.route("/token")
+def get_token():
+    return jsonify({"token": col_bling.find_one({"_id": 0}).get("token")})
+
+
 @app.route("/produtos")
 def getprodutos():
     listaPrudutosBling = listarProdutosBling()
