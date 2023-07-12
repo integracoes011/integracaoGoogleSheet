@@ -158,7 +158,7 @@ def getprodutos():
 
 @app.route("/criarestoque", methods=["POST"])
 def criar_estoque():
-    payload = request.get_json("payload")
+    payload = request.get_json()["payload"]
     return jsonify({"sucess": criarEstoque(
         payload["deposito"],
         payload["produtoId"],
