@@ -155,6 +155,18 @@ def getprodutos():
     listaPrudutosBling = listarProdutosBling()
     return jsonify({"payload": listaPrudutosBling})
 
+@app.route("/criarestoque")
+def criar_estoque():
+
+    payload = request.get_json("payload")
+    return criarEstoque(
+        payload["deposito"],
+        payload["produtoId"],
+        payload["qtdEstoque"],
+        payload["preco"],
+        payload["custo"],
+        payload["token"]
+    )
 
 @app.route("/callback")
 def callback():
