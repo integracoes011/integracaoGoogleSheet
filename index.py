@@ -286,7 +286,7 @@ def getprodutogtin(gtin):
             "nome": produtoBling["nome"],
             "precoBling": produtoBling["preco"],
             "status": "ativo" if produtoLI["ativo"] else "bloqueado",
-            "gtin": produtoLI["gtin"],
+            "gtin": gtin,
             "custo": precos["custo"],
             "precoLI": precos["cheio"],
             "promocional": precos["promocional"]
