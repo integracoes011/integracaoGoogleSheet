@@ -332,9 +332,12 @@ def atualizar_preco_bling_sku(sku, preco):
     return jsonify(atualizarPrecoBling(produtoBling, TOKEN))
 
 
-@app.route("/atualizar/preco/li/sku/<sku>", methods=["POST"])
-def atualizar_preco_li_gtin(sku):
+@app.route("/atualizar/preco/li/sku/<sku>/<gtin>", methods=["POST"])
+def atualizar_preco_li_gtin(sku, gtin):
+
     produtoLI = listarProdutoLI(sku)
+    if produtoLI == 0:
+        produtoLI = listarProdutoLIGtin(gtin)
 
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
 
