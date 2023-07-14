@@ -295,8 +295,8 @@ def getprodutogtin(gtin):
     return jsonify(produtoBling)
 
 
-@app.route("/atualizar/preco/bling/<gtin>/<preco>")
-def atualizar_preco_bling_gti(gtin, preco):
+@app.route("/atualizar/preco/bling/gtin/<gtin>/<preco>")
+def atualizar_preco_bling_gtin(gtin, preco):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
     produtoBling = listarProdutoBlingGtin(gtin, TOKEN)
@@ -306,14 +306,14 @@ def atualizar_preco_bling_gti(gtin, preco):
     return jsonify(atualizarPrecoBling(produtoBling, TOKEN))
 
 
-@app.route("/atualizar/preco/li/<gtin>", methods=["POST"])
+@app.route("/atualizar/preco/li/gtin/<gtin>", methods=["POST"])
 def atualizar_preco_li_sku(gtin):
     produtoLI = listarProdutoLIGtin(gtin)
 
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
 
 
-@app.route("/atualizar/preco/bling/<sku>/<preco>")
+@app.route("/atualizar/preco/bling/sku/<sku>/<preco>")
 def atualizar_preco_bling_sku(sku, preco):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     produtoBling = listarProdutoBling(sku, TOKEN)
@@ -323,8 +323,8 @@ def atualizar_preco_bling_sku(sku, preco):
     return jsonify(atualizarPrecoBling(produtoBling, TOKEN))
 
 
-@app.route("/atualizar/preco/li/<sku>", methods=["POST"])
-def atualizar_preco_li_sku(sku):
+@app.route("/atualizar/preco/li/sku/<sku>", methods=["POST"])
+def atualizar_preco_li_gtin(sku):
     produtoLI = listarProdutoLI(sku)
 
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
