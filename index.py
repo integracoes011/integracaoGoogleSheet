@@ -309,7 +309,7 @@ def atualizar_preco_li_sku(sku):
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
 
 
-@app.route("/atualizar/status/<sku>/<status>")
+@app.route("/atualizar/status/sku/<sku>/<status>")
 def atualizar_status(sku, status):
     produtoLI = listarProdutoLI(sku)
 
@@ -323,7 +323,7 @@ def atualizar_status(sku, status):
     return atualizarStatusLI(dados=produtoLI)
 
 
-@app.route("/atualizar/status/<gtin>/<status>")
+@app.route("/atualizar/status/gtin/<gtin>/<status>")
 def atualizar_status_gtin(gtin, status):
     produtoLI = listarProdutoLIGtin(gtin)
 
