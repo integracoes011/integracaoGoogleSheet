@@ -331,9 +331,12 @@ def atualizar_preco_li_gtin(sku):
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
 
 
-@app.route("/atualizar/status/sku/<sku>/<status>")
-def atualizar_status(sku, status):
+@app.route("/atualizar/status/sku/<sku>/<gtin>/<status>")
+def atualizar_status(sku, gtin, status):
+
     produtoLI = listarProdutoLI(sku)
+    if produtoLI == 0:
+        produtoLI = listarProdutoLIGtin(gtin)
 
     if status == "True":
         produtoLI["ativo"] = True
