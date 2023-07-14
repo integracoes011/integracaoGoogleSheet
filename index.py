@@ -251,11 +251,33 @@ def get_produto_epecifico(sku):
     )
 
 
-@app.route("/produto/bling/li/<sku>")
-def getproduto(sku):
+@app.route("/produto/bling/li/sku/<sku>")
+def getprodutosku(sku):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
     produtoBling = listarProdutoBling(sku, TOKEN)
+    produtoLI = listarProdutoLI(produtoBling["codigo"])
+    precos = listarPrecoLI(produtoLI["id"])
+
+    if produtoBling != 0:
+        payload = {
+            "nome": produtoBling["nome"],
+            "precoBling": produtoBling["preco"],
+            "status": "ativo" if produtoLI["ativo"] else "bloqueado",
+            "gtin": produtoLI["gtin"],
+            "custo": precos["custo"],
+            "precoLI": precos["cheio"],
+            "promocional": precos["promocional"]
+        }
+        return jsonify(payload)
+    return jsonify(produtoBling)
+
+
+@app.route("/produto/bling/li/gtin/<gtin>")
+def getprodutogtin(gtin):
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+
+    produtoBling = listarProdutoBlingGtin(gtin, TOKEN)
     produtoLI = listarProdutoLI(produtoBling["codigo"])
     precos = listarPrecoLI(produtoLI["id"])
 
@@ -286,7 +308,6 @@ def atualizar_preco_bling_gti(gtin, preco):
 
 @app.route("/atualizar/preco/li/<gtin>", methods=["POST"])
 def atualizar_preco_li_sku(gtin):
-
     produtoLI = listarProdutoLIGtin(gtin)
 
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
@@ -335,7 +356,6 @@ def atualizar_status_gtin(gtin, status):
         produtoLI["bloqueado"] = True
 
     return atualizarStatusLI(dados=produtoLI)
-
 
 
 @app.route("/criarestoque", methods=["POST"])
