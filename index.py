@@ -261,6 +261,10 @@ def getprodutosku(sku, gtin):
         produtoBling = listarProdutoBlingGtin(gtin, TOKEN)
 
     produtoLI = listarProdutoLI(produtoBling["codigo"])
+
+    if produtoLI == 0:
+        produtoLI = listarProdutoLIGtin(gtin)
+
     precos = listarPrecoLI(produtoLI["id"])
 
     if produtoBling != 0:
