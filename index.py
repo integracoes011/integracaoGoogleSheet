@@ -26,12 +26,39 @@ def listarProdutoBling(codigo, TOKEN):
     )
     # retorna produto especifico
     dados = data.json()["data"]
+
+    return dados[0] if len(dados) > 0 else 0
+
+
+def listarProdutoBlingGtin(codigo, TOKEN):
+    data = requests.get(
+        f"{BASE_URL}produtos?gtin={codigo}",
+        headers={
+            "Authorization": f"Bearer {TOKEN}"
+        }
+    )
+    # retorna produto especifico
+    dados = data.json()["data"]
+
     return dados[0] if len(dados) > 0 else 0
 
 
 def listarProdutoLI(codigo):
     data = requests.get(
         f"{BASE_URL_LI}produto?sku={codigo}",
+        headers={
+            "Authorization": TOKEN_LI
+        }
+    )
+
+    dados = data.json()["objects"]
+
+    return dados[0] if len(dados) > 0 else 0
+
+
+def listarProdutoLIGtin(codigo):
+    data = requests.get(
+        f"{BASE_URL_LI}produto?gtin={codigo}",
         headers={
             "Authorization": TOKEN_LI
         }
@@ -85,7 +112,6 @@ def atualizarPrecoBling(dados, TOKEN):
 
 
 def atualizarStatusLI(dados):
-
     url = f"https://api.awsli.com.br/v1/produto/{dados['id']}"
 
     headers = {
@@ -247,8 +273,27 @@ def getproduto(sku):
     return jsonify(produtoBling)
 
 
+@app.route("/atualizar/preco/bling/<gtin>/<preco>")
+def atualizar_preco_bling_gti(gtin, preco):
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+
+    produtoBling = listarProdutoBlingGtin(gtin, TOKEN)
+
+    produtoBling["preco"] = preco
+
+    return jsonify(atualizarPrecoBling(produtoBling, TOKEN))
+
+
+@app.route("/atualizar/preco/li/<gtin>", methods=["POST"])
+def atualizar_preco_li_sku(gtin):
+
+    produtoLI = listarProdutoLIGtin(gtin)
+
+    return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
+
+
 @app.route("/atualizar/preco/bling/<sku>/<preco>")
-def atualizar_preco_bling(sku, preco):
+def atualizar_preco_bling_sku(sku, preco):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     produtoBling = listarProdutoBling(sku, TOKEN)
 
@@ -258,14 +303,14 @@ def atualizar_preco_bling(sku, preco):
 
 
 @app.route("/atualizar/preco/li/<sku>", methods=["POST"])
-def atualizar_preco_li(sku):
+def atualizar_preco_li_sku(sku):
     produtoLI = listarProdutoLI(sku)
 
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
 
+
 @app.route("/atualizar/status/<sku>/<status>")
 def atualizar_status(sku, status):
-
     produtoLI = listarProdutoLI(sku)
 
     if status == "True":
