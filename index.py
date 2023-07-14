@@ -251,11 +251,15 @@ def get_produto_epecifico(sku):
     )
 
 
-@app.route("/produto/bling/li/sku/<sku>")
-def getprodutosku(sku):
+@app.route("/produto/bling/li/sku/<sku>/<gtin>")
+def getprodutosku(sku, gtin):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
     produtoBling = listarProdutoBling(sku, TOKEN)
+
+    if produtoBling == 0:
+        produtoBling = listarProdutoBlingGtin(gtin, TOKEN)
+
     produtoLI = listarProdutoLI(produtoBling["codigo"])
     precos = listarPrecoLI(produtoLI["id"])
 
