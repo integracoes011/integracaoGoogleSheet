@@ -63,6 +63,44 @@ def listarEspecificoBling(codigo, TOKEN):
     return data.json()["data"][0]
 
 
+def atualizarPrecoBling(dados, TOKEN):
+
+    payload = json.dumps({
+        "id": dados["id"],
+        "nome": dados["nome"],
+        "codigo": dados["codigo"],
+        "preco": dados["preco"],
+        "tipo": dados["tipo"],
+        "situacao": dados["situacao"],
+        "formato": dados["formato"],
+        "descricaoCurta": dados["descricaoCurta"]
+    })
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': f'Bearer {TOKEN}',
+        'Cookie': 'PHPSESSID=l3eehmpec57laprti2qok9oemh'
+    }
+
+    return requests.request("PUT", f"{BASE_URL}produtos/{dados['id']}", headers=headers, data=payload).json()
+
+
+def atualizarPrecoLI(dados, id):
+    url = f"https://api.awsli.com.br/v1/produto_preco/{id}"
+
+    payload = json.dumps({
+        "cheio": dados["cheio"],
+        "custo": dados["custo"],
+        "promocional": dados["promocional"]
+    })
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': TOKEN_LI
+    }
+
+    return requests.request("PUT", url, headers=headers, data=payload).json()
+
 def getIdDeposito(TOKEN):
     data = requests.get(
         f"{BASE_URL}depositos",
@@ -196,6 +234,24 @@ def getproduto(sku):
     return jsonify(produtoBling)
 
 
+@app.route("/atualizar/preco/bling/<sku>/<preco>")
+def atualizar_preco_bling(sku, preco):
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+    produtoBling = listarProdutoBling(sku, TOKEN)
+
+    produtoBling["preco"] = preco
+
+    return jsonify(atualizarPrecoBling(produtoBling, TOKEN))
+
+
+@app.route("/atualizar/preco/li/<sku>", methods=["POST"])
+def atualizar_preco_li(sku):
+
+    produtoLI = listarProdutoLI(sku)
+
+    return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
+
+
 @app.route("/criarestoque", methods=["POST"])
 def criar_estoque():
     payload = request.get_json()["payload"]
@@ -246,4 +302,4 @@ def callback():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
