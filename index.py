@@ -3,7 +3,6 @@ import requests
 import json
 from pymongo import MongoClient
 from decouple import config
-import aiohttp
 
 client = MongoClient(
     config("URL_CONNECT")
@@ -64,7 +63,6 @@ def listarEspecificoBling(codigo, TOKEN):
 
 
 def atualizarPrecoBling(dados, TOKEN):
-
     payload = json.dumps({
         "id": dados["id"],
         "nome": dados["nome"],
@@ -86,6 +84,20 @@ def atualizarPrecoBling(dados, TOKEN):
     return requests.request("PUT", f"{BASE_URL}produtos/{dados['id']}", headers=headers, data=payload).json()
 
 
+def atualizarStatusLI(dados):
+
+    url = f"https://api.awsli.com.br/v1/produto/{dados['id']}"
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': TOKEN_LI
+    }
+
+    response = requests.request("PUT", url, headers=headers, data=json.dumps(dados))
+
+    return response.json()
+
+
 def atualizarPrecoLI(dados, id):
     url = f"https://api.awsli.com.br/v1/produto_preco/{id}"
 
@@ -100,6 +112,7 @@ def atualizarPrecoLI(dados, id):
     }
 
     return requests.request("PUT", url, headers=headers, data=payload).json()
+
 
 def getIdDeposito(TOKEN):
     data = requests.get(
@@ -246,10 +259,23 @@ def atualizar_preco_bling(sku, preco):
 
 @app.route("/atualizar/preco/li/<sku>", methods=["POST"])
 def atualizar_preco_li(sku):
-
     produtoLI = listarProdutoLI(sku)
 
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
+
+@app.route("/atualizar/status/<sku>/<status>")
+def atualizar_status(sku, status):
+
+    produtoLI = listarProdutoLI(sku)
+
+    if status == "True":
+        produtoLI["ativo"] = True
+        produtoLI["bloqueado"] = False
+    else:
+        produtoLI["ativo"] = False
+        produtoLI["bloqueado"] = True
+
+    return atualizarStatusLI(dados=produtoLI)
 
 
 @app.route("/criarestoque", methods=["POST"])
