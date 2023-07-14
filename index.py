@@ -278,7 +278,7 @@ def getprodutogtin(gtin):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
     produtoBling = listarProdutoBlingGtin(gtin, TOKEN)
-    produtoLI = listarProdutoLI(produtoBling["codigo"])
+    produtoLI = listarProdutoLIGtin(gtin)
     precos = listarPrecoLI(produtoLI["id"])
 
     if produtoBling != 0:
@@ -408,4 +408,4 @@ def callback():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
