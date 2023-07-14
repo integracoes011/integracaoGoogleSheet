@@ -323,6 +323,21 @@ def atualizar_status(sku, status):
     return atualizarStatusLI(dados=produtoLI)
 
 
+@app.route("/atualizar/status/<gtin>/<status>")
+def atualizar_status_gtin(gtin, status):
+    produtoLI = listarProdutoLIGtin(gtin)
+
+    if status == "True":
+        produtoLI["ativo"] = True
+        produtoLI["bloqueado"] = False
+    else:
+        produtoLI["ativo"] = False
+        produtoLI["bloqueado"] = True
+
+    return atualizarStatusLI(dados=produtoLI)
+
+
+
 @app.route("/criarestoque", methods=["POST"])
 def criar_estoque():
     payload = request.get_json()["payload"]
