@@ -14,18 +14,42 @@ col_bling = db["bling"]
 
 app = Flask(__name__)
 BASE_URL = "https://www.bling.com.br/Api/v3/"
+BASE_URL_LI = "https://api.awsli.com.br/v1/"
+TOKEN_LI = "chave_api 32b19b99033db32ab955 aplicacao 120f779a-59dc-4351-92f6-857efd50362a"
 
 
-def listarProdutosBling():
-    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+def listarProdutoBling(codigo, TOKEN):
     data = requests.get(
-        f"{BASE_URL}produtos",
+        f"{BASE_URL}produtos?codigo={codigo}",
         headers={
             "Authorization": f"Bearer {TOKEN}"
         }
     )
-    # retorna a lista de produtos
-    return data.json()["data"]
+    # retorna produto especifico
+    dados = data.json()["data"]
+    return dados[0] if len(dados) > 0 else 0
+
+
+def listarProdutoLI(codigo):
+    data = requests.get(
+        f"{BASE_URL_LI}produto?sku={codigo}",
+        headers={
+            "Authorization": TOKEN_LI
+        }
+    )
+
+    dados = data.json()["objects"]
+
+    return dados[0] if len(dados) > 0 else 0
+
+
+def listarPrecoLI(codigo):
+    return requests.get(
+        f"{BASE_URL_LI}produto_preco/{codigo}",
+        headers={
+            "Authorization": TOKEN_LI
+        }
+    ).json()
 
 
 def listarEspecificoBling(codigo, TOKEN):
@@ -150,10 +174,26 @@ def get_produto_epecifico(sku):
     )
 
 
-@app.route("/produtos")
-def getprodutos():
-    listaPrudutosBling = listarProdutosBling()
-    return jsonify({"payload": listaPrudutosBling})
+@app.route("/produto/bling/li/<sku>")
+def getproduto(sku):
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+
+    produtoBling = listarProdutoBling(sku, TOKEN)
+    produtoLI = listarProdutoLI(produtoBling["codigo"])
+    precos = listarPrecoLI(produtoLI["id"])
+
+    if produtoBling != 0:
+        payload = {
+            "nome": produtoBling["nome"],
+            "precoBling": produtoBling["preco"],
+            "status": "ativo" if produtoLI["ativo"] else "bloqueado",
+            "gtin": produtoLI["gtin"],
+            "custo": precos["custo"],
+            "precoLI": precos["cheio"],
+            "promocional": precos["promocional"]
+        }
+        return jsonify(payload)
+    return jsonify(produtoBling)
 
 
 @app.route("/criarestoque", methods=["POST"])
