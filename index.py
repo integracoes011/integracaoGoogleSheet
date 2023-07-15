@@ -431,8 +431,12 @@ def get_detalhes_pedidos(id):
     response = requests.request("GET", url, headers=headers).json()["data"]
 
     payload = {
-        "loja": response[""]
+        "receptor": response["transporte"]["etiqueta"]["nome"],
+        "itens": response["itens"],
+        "trasportador": response["transporte"]["contato"]["nome"]
     }
+
+    return jsonify(payload)
 
 
 @app.route("/callback")
