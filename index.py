@@ -339,7 +339,6 @@ def atualizar_preco_bling_sku(sku, preco):
 
 @app.route("/atualizar/preco/li/sku/<sku>/<gtin>", methods=["POST"])
 def atualizar_preco_li_gtin(sku, gtin):
-
     sku = sku.replace(" ", "")
     gtin = gtin.replace(" ", "")
 
@@ -371,7 +370,6 @@ def atualizar_status(sku, gtin, status):
 
 @app.route("/atualizar/status/gtin/<gtin>/<status>")
 def atualizar_status_gtin(gtin, status):
-
     gtin = gtin.replace(" ", "")
     produtoLI = listarProdutoLIGtin(gtin)
 
@@ -396,6 +394,25 @@ def criar_estoque():
         payload["custo"],
         payload["token"]
     )})
+
+
+@app.route("/pedidos/<date>")
+def get_pedidos_hoje(date):
+    # TOKEN = col_bling.find_one({"_id": 0}).get("token")
+    TOKEN = "dcadc2dab5e754ff6178b1b502b81ecae04f417d"
+
+    url = f"https://www.bling.com.br/Api/v3/pedidos/vendas?dataInicial={date}"
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': f'Bearer {TOKEN}',
+        'Cookie': 'PHPSESSID=nopshr5oj2r2qh4jfk82e1v3tr'
+    }
+    response = requests.request("GET", url, headers=headers).json()["data"]
+    payload = [{"id": data["id"],
+                "cliente": data["contato"]["nome"]} for data in response]
+
+    return payload
 
 
 @app.route("/callback")
