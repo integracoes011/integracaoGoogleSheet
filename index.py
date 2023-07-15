@@ -410,9 +410,29 @@ def get_pedidos_hoje(date):
     }
     response = requests.request("GET", url, headers=headers).json()["data"]
     payload = [{"id": data["id"],
-                "cliente": data["contato"]["nome"]} for data in response]
+                "cliente": data["contato"]["nome"],
+                "loja": data["numeroLoja"]
+                } for data in response]
 
     return payload
+
+
+@app.route("/pedidos/detalhe/<id>")
+def get_detalhes_pedidos(id):
+    TOKEN = "dcadc2dab5e754ff6178b1b502b81ecae04f417d"
+
+    url = f"https://www.bling.com.br/Api/v3/pedidos/vendas/{id}"
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': f'Bearer {TOKEN}',
+        'Cookie': 'PHPSESSID=nopshr5oj2r2qh4jfk82e1v3tr'
+    }
+    response = requests.request("GET", url, headers=headers).json()["data"]
+
+    payload = {
+        "loja": response[""]
+    }
 
 
 @app.route("/callback")
