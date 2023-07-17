@@ -511,20 +511,21 @@ def get_produtos_bling():
             'Cookie': 'PHPSESSID=g1166n8845jstcapp1dbciuh1h'
         }
         response = requests.request("GET", url, headers=headers).json()
-        if len(response['data']) > 0:
-            for item in response["data"]:
-                listaProdutos.append(
-                    {
-                        "sku": item["codigo"],
-                        "nome": item["nome"],
-                        "venda": item["preco"]
-                    }
-                )
-            pagina += 1
-        else:
-            break
-
-    return listaProdutos
+        return response
+    #     if len(response['data']) > 0:
+    #         for item in response["data"]:
+    #             listaProdutos.append(
+    #                 {
+    #                     "sku": item["codigo"],
+    #                     "nome": item["nome"],
+    #                     "venda": item["preco"]
+    #                 }
+    #             )
+    #         pagina += 1
+    #     else:
+    #         break
+    #
+    # return listaProdutos
 
 
 @app.route("/pegar/custo/gtin/bling/<sku>")
