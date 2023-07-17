@@ -398,8 +398,8 @@ def criar_estoque():
 
 @app.route("/pedidos/<date>")
 def get_pedidos_hoje(date):
-    # TOKEN = col_bling.find_one({"_id": 0}).get("token")
-    TOKEN = "dcadc2dab5e754ff6178b1b502b81ecae04f417d"
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+    # TOKEN = "dcadc2dab5e754ff6178b1b502b81ecae04f417d"
 
     url = f"https://www.bling.com.br/Api/v3/pedidos/vendas?idsSituacoes=6&dataInicial={date}"
 
@@ -419,7 +419,7 @@ def get_pedidos_hoje(date):
 
 @app.route("/pedidos/detalhe/<id>")
 def get_detalhes_pedidos(id):
-    TOKEN = "dcadc2dab5e754ff6178b1b502b81ecae04f417d"
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
     url = f"https://www.bling.com.br/Api/v3/pedidos/vendas/{id}"
 
@@ -438,6 +438,8 @@ def get_detalhes_pedidos(id):
 
     return jsonify(payload)
 
+# @app.route("/listar/produtos")
+# def get_listar_todos_produtos():
 
 @app.route("/callback")
 def callback():
