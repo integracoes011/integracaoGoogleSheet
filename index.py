@@ -442,7 +442,6 @@ def get_detalhes_pedidos(id):
 def pegar_precos(itens):
     nova_lista = []
     for item in itens:
-
         id_produto = item["id"]
         url = f"https://api.awsli.com.br/v1/produto_preco/{id_produto}"
 
@@ -495,6 +494,54 @@ def get_listar_todos_produtos():
             "next": response["meta"]["next"],
             "itens": pegar_precos(response["objects"])
         })
+
+
+@app.route("/listar/produtos/bling")
+def get_produtos_bling():
+    TOKEN = col_bling.find_one({"_id": 0}).get("token")
+
+    pagina = 1
+    listaProdutos = []
+    while True:
+        url = f"https://www.bling.com.br/Api/v3/produtos?pagina={pagina}"
+
+        headers = {
+            'Accept': 'application/json',
+            'Authorization': f'Bearer {TOKEN}',
+            'Cookie': 'PHPSESSID=g1166n8845jstcapp1dbciuh1h'
+        }
+        response = requests.request("GET", url, headers=headers).json()
+        if len(response['data']) > 0:
+            for item in response["data"]:
+                listaProdutos.append(
+                    {
+                        "sku": item["codigo"],
+                        "nome": item["nome"],
+                        "venda": item["preco"]
+                    }
+                )
+            pagina += 1
+        else:
+            break
+
+    return listaProdutos
+
+
+@app.route("/pegar/custo/gtin/bling/<sku>")
+def get_gtin_bling(sku):
+    url = f"https://api.awsli.com.br/v1/produto?sku={sku}"
+
+    headers = {
+        'Authorization': TOKEN_LI
+    }
+
+    gtinEid = requests.request("GET", url, headers=headers).json()["objects"][0]
+    url = f"https://api.awsli.com.br/v1/produto_preco/{gtinEid['id']}"
+
+    return {
+        "custo":  requests.request("GET", url, headers=headers).json()["custo"],
+        "gtin": gtinEid["gtin"]
+    }
 
 
 @app.route("/callback")
