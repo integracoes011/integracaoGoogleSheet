@@ -438,8 +438,64 @@ def get_detalhes_pedidos(id):
 
     return jsonify(payload)
 
-# @app.route("/listar/produtos")
-# def get_listar_todos_produtos():
+
+def pegar_precos(itens):
+    nova_lista = []
+    for item in itens:
+
+        id_produto = item["id"]
+        url = f"https://api.awsli.com.br/v1/produto_preco/{id_produto}"
+
+        headers = {
+            'Authorization': TOKEN_LI
+        }
+
+        precos = requests.request("GET", url, headers=headers).json()
+
+        nova_lista.append(
+            {
+                "gtin": item["gtin"],
+                "sku": item["sku"],
+                "nome": item["nome"],
+                "custo": precos["custo"],
+                "venda": precos["cheio"]
+            }
+        )
+
+    return nova_lista
+
+
+@app.route("/listar/produtos", methods=["POST"])
+def get_listar_todos_produtos():
+    payload = request.get_json()["payload"]
+
+    if payload["next"] == 1:
+        url = "https://api.awsli.com.br/api/v1/produto"
+
+        headers = {
+            'Authorization': TOKEN_LI
+        }
+
+        response = requests.request("GET", url, headers=headers).json()
+
+        return jsonify({
+            "next": response["meta"]["next"],
+            "itens": pegar_precos(response["objects"])
+        })
+    else:
+        url = f"https://api.awsli.com.br{payload['next']}"
+
+        headers = {
+            'Authorization': TOKEN_LI
+        }
+
+        response = requests.request("GET", url, headers=headers).json()
+
+        return jsonify({
+            "next": response["meta"]["next"],
+            "itens": pegar_precos(response["objects"])
+        })
+
 
 @app.route("/callback")
 def callback():
