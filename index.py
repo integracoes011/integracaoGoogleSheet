@@ -511,7 +511,7 @@ def get_produtos_bling():
             'Cookie': 'PHPSESSID=g1166n8845jstcapp1dbciuh1h'
         }
         response = requests.request("GET", url, headers=headers).json()
-        return response;
+        return response
     #     listaProdutosRow = response["data"]
     #
     #     if len(listaProdutosRow) > 0:
