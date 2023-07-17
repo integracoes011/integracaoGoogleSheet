@@ -526,7 +526,7 @@ def get_produtos_bling():
                 pagina += 1
             else:
                 break
-        except:
+        except KeyError:
             return response
 
     return listaProdutos
