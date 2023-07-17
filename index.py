@@ -91,6 +91,8 @@ def listarEspecificoBling(codigo, TOKEN):
 
 def atualizarPrecoBling(dados, TOKEN):
     payload = json.dumps({
+        "estrutura": ".",
+        "tipoEstoque": "F",
         "id": dados["id"],
         "nome": dados["nome"],
         "codigo": dados["codigo"],
@@ -496,6 +498,7 @@ def get_listar_todos_produtos():
         })
 
 
+# Rota com problema de requisição
 @app.route("/listar/produtos/bling")
 def get_produtos_bling():
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
@@ -544,7 +547,7 @@ def get_gtin_bling(sku):
     url = f"https://api.awsli.com.br/v1/produto_preco/{gtinEid['id']}"
 
     return {
-        "custo":  requests.request("GET", url, headers=headers).json()["custo"],
+        "custo": requests.request("GET", url, headers=headers).json()["custo"],
         "gtin": gtinEid["gtin"]
     }
 
