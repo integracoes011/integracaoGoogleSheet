@@ -401,7 +401,7 @@ def get_pedidos_hoje(date):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     # TOKEN = "dcadc2dab5e754ff6178b1b502b81ecae04f417d"
 
-    url = f"https://www.bling.com.br/Api/v3/pedidos/vendas?idsSituacoes=6&dataInicial={date}"
+    url = f"https://www.bling.com.br/Api/v3/pedidos/vendas?idsSituacoes=6"
 
     headers = {
         'Accept': 'application/json',
