@@ -91,8 +91,17 @@ def listarEspecificoBling(codigo, TOKEN):
 
 def atualizarPrecoBling(dados, TOKEN):
     payload = json.dumps({
-        "estrutura": "Com composição.",
-        "tipoEstoque": "F",
+        "estrutura": {
+            "tipoEstoque": "F",
+            "componentes": [
+                {
+                    "produto": {
+                        "id": dados["id"]
+                    },
+                    "quantidade": 0
+                }
+            ]
+        },
         "id": dados["id"],
         "nome": dados["nome"],
         "codigo": dados["codigo"],
