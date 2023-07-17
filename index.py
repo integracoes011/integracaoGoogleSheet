@@ -411,7 +411,7 @@ def get_pedidos_hoje(date):
     response = requests.request("GET", url, headers=headers).json()["data"]
     payload = [{"id": data["id"],
                 "cliente": data["contato"]["nome"],
-                "loja": data["numeroLoja"]
+                "loja": data["loja"]["id"]
                 } for data in response]
 
     return payload
