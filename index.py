@@ -344,7 +344,7 @@ def atualizar_preco_bling_sku(sku, preco):
 
 @app.route("/atualizar/preco/li/sku/<sku>/<gtin>", methods=["POST"])
 def atualizar_preco_li_gtin(sku, gtin):
-    sku = sku.replace(" ", "")
+    sku = sku.replace("%20", "")
     gtin = gtin.replace(" ", "")
 
     produtoLI = listarProdutoLI(sku)
