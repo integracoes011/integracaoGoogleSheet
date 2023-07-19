@@ -342,10 +342,15 @@ def atualizar_preco_bling_sku(sku, preco):
     return jsonify(atualizarPrecoBling(produtoBling, TOKEN))
 
 
+def replaceSymbols(string):
+    nova_string = string
+    for s in ["%20", " "]:
+        nova_string = nova_string.replace(s, "")
+    return nova_string
 @app.route("/atualizar/preco/li/sku/<sku>/<gtin>", methods=["POST"])
 def atualizar_preco_li_gtin(sku, gtin):
-    sku = sku.replace("%20", "")
-    gtin = gtin.replace(" ", "")
+    sku = replaceSymbols(sku)
+    gtin = replaceSymbols(gtin)
 
     produtoLI = listarProdutoLI(sku)
     if produtoLI == 0:
