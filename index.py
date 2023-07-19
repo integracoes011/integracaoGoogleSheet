@@ -101,13 +101,13 @@ def getEstruturaProduto(id, TOKEN):
     return requests.request("GET", url, headers=headers).json().get("data")
 
 
-def atualizarPrecoBling(dados, TOKEN):
-
-    if est := getEstruturaProduto(dados["id"], TOKEN):
-        estrutura = {"estrutura": est}
-        dados.update(estrutura)
-
-    payload = json.dumps(dados)
+def atualizarPrecoBling(id, TOKEN, novo_preco):
+    # if est := getEstruturaProduto(dados["id"], TOKEN):
+    #     estrutura = {"estrutura": est}
+    #     dados.update(estrutura)
+    dados_atualizado = pegar_toda_info_bling(id, TOKEN)
+    dados_atualizado["preco"] = novo_preco
+    payload = json.dumps(dados_atualizado)
 
     headers = {
         'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ def atualizarPrecoBling(dados, TOKEN):
         'Cookie': 'PHPSESSID=l3eehmpec57laprti2qok9oemh'
     }
 
-    return requests.request("PUT", f"{BASE_URL}produtos/{dados['id']}", headers=headers, data=payload).json()
+    return requests.request("PUT", f"{BASE_URL}produtos/{id}", headers=headers, data=payload).json()
 
 
 def atualizarStatusLI(dados):
@@ -314,15 +314,27 @@ def getprodutogtin(gtin):
     return jsonify(produtoBling)
 
 
+def pegar_toda_info_bling(id, TOKEN):
+    url = f"https://www.bling.com.br/Api/v3/produtos/{id}"
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': f'Bearer {TOKEN}',
+        'Cookie': 'PHPSESSID=uv8prs2vuv4eskpse0f5f8s9ps'
+    }
+
+    return requests.request("GET", url, headers=headers).json()["data"]
+
+
 @app.route("/atualizar/preco/bling/gtin/<gtin>/<preco>")
 def atualizar_preco_bling_gtin(gtin, preco):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
 
     produtoBling = listarProdutoBlingGtin(gtin, TOKEN)
 
-    produtoBling["preco"] = preco
+    # produtoBling["preco"] = preco
 
-    return jsonify(atualizarPrecoBling(produtoBling, TOKEN))
+    return jsonify(atualizarPrecoBling(produtoBling["id"], TOKEN, preco))
 
 
 @app.route("/atualizar/preco/li/gtin/<gtin>", methods=["POST"])
@@ -340,9 +352,7 @@ def atualizar_preco_bling_sku(sku, preco):
     TOKEN = col_bling.find_one({"_id": 0}).get("token")
     produtoBling = listarProdutoBling(sku, TOKEN)
 
-    produtoBling["preco"] = preco
-
-    return jsonify(atualizarPrecoBling(produtoBling, TOKEN))
+    return jsonify(atualizarPrecoBling(produtoBling["id"], TOKEN, preco))
 
 
 def replaceSymbols(string):
