@@ -347,14 +347,16 @@ def replaceSymbols(string):
     for s in ["%20", " "]:
         nova_string = nova_string.replace(s, "")
     return nova_string
+
+
 @app.route("/atualizar/preco/li/sku/<sku>/<gtin>", methods=["POST"])
 def atualizar_preco_li_gtin(sku, gtin):
-    sku = replaceSymbols(sku)
-    gtin = replaceSymbols(gtin)
+    sku_melhorado = replaceSymbols(sku)
+    gtin_melhorado = replaceSymbols(gtin)
 
-    produtoLI = listarProdutoLI(sku)
+    produtoLI = listarProdutoLI(sku_melhorado)
     if produtoLI == 0:
-        produtoLI = listarProdutoLIGtin(gtin)
+        produtoLI = listarProdutoLIGtin(gtin_melhorado)
 
     return atualizarPrecoLI(dados=request.get_json()["payload"], id=produtoLI["id"])
 
