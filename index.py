@@ -98,12 +98,15 @@ def getEstruturaProduto(id, TOKEN):
         'Cookie': 'PHPSESSID=uic7safk2t2bu6k1u8fu5mt8kg'
     }
 
-    return requests.request("GET", url, headers=headers).json()["data"]
+    return requests.request("GET", url, headers=headers).json().get("data")
 
 
 def atualizarPrecoBling(dados, TOKEN):
-    estrutura = {"estrutura": getEstruturaProduto(dados["id"], TOKEN)}
-    dados.update(estrutura)
+
+    if est := getEstruturaProduto(dados["id"], TOKEN):
+        estrutura = {"estrutura": est}
+        dados.update(estrutura)
+
     payload = json.dumps(dados)
 
     headers = {
