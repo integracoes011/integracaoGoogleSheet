@@ -89,28 +89,22 @@ def listarEspecificoBling(codigo, TOKEN):
     return data.json()["data"][0]
 
 
+def getEstruturaProduto(id, TOKEN):
+    url = f"https://www.bling.com.br/Api/v3/produtos/estruturas/{id}"
+
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': f'Bearer {TOKEN}',
+        'Cookie': 'PHPSESSID=uic7safk2t2bu6k1u8fu5mt8kg'
+    }
+
+    return requests.request("GET", url, headers=headers).json()["data"]
+
+
 def atualizarPrecoBling(dados, TOKEN):
-    payload = json.dumps({
-        "estrutura": {
-            "tipoEstoque": "F",
-            "componentes": [
-                {
-                    "produto": {
-                        "id": dados["id"]
-                    },
-                    "quantidade": 0
-                }
-            ]
-        },
-        "id": dados["id"],
-        "nome": dados["nome"],
-        "codigo": dados["codigo"],
-        "preco": dados["preco"],
-        "tipo": dados["tipo"],
-        "situacao": dados["situacao"],
-        "formato": dados["formato"],
-        "descricaoCurta": dados["descricaoCurta"]
-    })
+    estrutura = {"estrutura": getEstruturaProduto(dados["id"], TOKEN)}
+    dados.update(estrutura)
+    payload = json.dumps(dados)
 
     headers = {
         'Content-Type': 'application/json',
